@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Navigation Core · Visión CRUD de Categorías</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+<style>
+  :root {
+    --bg-primary: #1a1a1a;
+    --bg-secondary: #252525;
+    --surface: rgba(255,255,255,0.03);
+    --surface-hover: rgba(255,255,255,0.06);
+    --border: rgba(255,255,255,0.08);
+    --border-strong: rgba(255,255,255,0.15);
+    --text-primary: #ffffff;
+    --text-secondary: rgba(255,255,255,0.6);
+    --text-tertiary: rgba(255,255,255,0.4);
+    --accent-blue: #007AFF;
+    --accent-green: #34C759;
+    --accent-orange: #FF9500;
+    --accent-red: #FF3B30;
+    --accent-cyan: #5AC8FA;
+    --accent-purple: #BF5AF2;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.47059;
+    font-weight: 400;
+    letter-spacing: -0.022em;
+    overflow-x: hidden;
+  }
+
+  .noise {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none; z-index: 1000; opacity: 0.03;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  }
+
+  .surface {
+    background: var(--surface);
+    backdrop-filter: blur(40px) saturate(180%);
+    -webkit-backdrop-filter: blur(40px) saturate(180%);
+    border: 1px solid var(--border);
+    transition: all 0.4s cubic-bezier(0.16,1,0.3,1);
+  }
+  .surface:hover {
+    background: var(--surface-hover);
+    border-color: var(--border-strong);
+  }
+
+  .label {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--text-tertiary);
+  }
+
+  .page-wrapper { max-width: 1280px; margin: 0 auto; padding: 60px 40px; }
+  @media (max-width: 768px) { .page-wrapper { padding: 40px 20px; } }
+
+  /* ── NAV ── */
+  .top-nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(26,26,26,0.8);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border-bottom: 1px solid var(--border);
+    padding: 0 40px;
+  }
+  .nav-inner {
+    max-width: 1280px; margin: 0 auto;
+    display: flex; align-items: center; gap: 0;
+    height: 52px; overflow-x: auto;
+  }
+  .nav-inner::-webkit-scrollbar { display: none; }
+  .nav-link {
+    flex-shrink: 0;
+    font-size: 12px; font-weight: 500; letter-spacing: -0.01em;
+    color: var(--text-tertiary); padding: 6px 14px;
+    border-radius: 8px; cursor: pointer;
+    transition: all 0.2s; text-decoration: none;
+    white-space: nowrap;
+  }
+  .nav-link:hover { color: var(--text-secondary); background: var(--surface); }
+  .nav-link.active { color: var(--text-primary); background: rgba(255,255,255,0.08); }
+
+  /* ── HEADER ── */
+  .hero { padding: 72px 0 56px; }
+  .hero-eyebrow { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+  .hero-tag {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.07em;
+    text-transform: uppercase; color: var(--accent-blue);
+    padding: 4px 10px; border-radius: 20px;
+    background: rgba(0,122,255,0.12); border: 1px solid rgba(0,122,255,0.2);
+  }
+  .hero-date { font-size: 12px; color: var(--text-tertiary); }
+  .hero-title {
+    font-size: clamp(36px, 5vw, 60px);
+    font-weight: 600; letter-spacing: -0.04em;
+    line-height: 1.08; margin-bottom: 16px;
+  }
+  .hero-title span { color: var(--accent-blue); }
+  .hero-subtitle {
+    font-size: 17px; color: var(--text-secondary);
+    max-width: 600px; line-height: 1.6; letter-spacing: -0.015em;
+    margin-bottom: 32px;
+  }
+  .hero-meta { display: flex; gap: 24px; flex-wrap: wrap; }
+  .hero-meta-item { display: flex; flex-direction: column; gap: 2px; }
+  .hero-meta-label { font-size: 11px; color: var(--text-tertiary); font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; }
+  .hero-meta-value { font-size: 13px; color: var(--text-secondary); font-weight: 500; }
+
+  /* ── SECTION CARDS ── */
+  .section-card { border-radius: 20px; padding: 32px; margin-bottom: 24px; }
+  .section-header { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 20px; }
+  .section-accent { width: 3px; border-radius: 2px; min-height: 36px; flex-shrink: 0; }
+  .section-title { font-size: 17px; font-weight: 600; letter-spacing: -0.021em; margin-bottom: 4px; }
+  .section-desc { font-size: 13px; color: var(--text-tertiary); line-height: 1.5; }
+
+  /* ── PILLS ── */
+  .pill { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; letter-spacing: 0.02em; white-space: nowrap; }
+  .pill-green  { background: rgba(52,199,89,0.15);  color: #34C759; border: 1px solid rgba(52,199,89,0.2); }
+  .pill-orange { background: rgba(255,149,0,0.15);  color: #FF9500; border: 1px solid rgba(255,149,0,0.2); }
+  .pill-red    { background: rgba(255,59,48,0.15);  color: #FF3B30; border: 1px solid rgba(255,59,48,0.2); }
+  .pill-blue   { background: rgba(0,122,255,0.15);  color: #007AFF; border: 1px solid rgba(0,122,255,0.2); }
+  .pill-purple { background: rgba(191,90,242,0.15); color: #BF5AF2; border: 1px solid rgba(191,90,242,0.2); }
+  .pill-cyan   { background: rgba(90,200,250,0.15); color: #5AC8FA; border: 1px solid rgba(90,200,250,0.2); }
+  .pill-grey   { background: rgba(255,255,255,0.06); color: var(--text-tertiary); border: 1px solid var(--border); }
+
+  /* ── TWO COL ── */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+  @media (max-width: 900px) { .two-col { grid-template-columns: 1fr; } }
+
+  /* ── FLOW STEPS ── */
+  .flow-list { display: flex; flex-direction: column; gap: 0; }
+  .flow-step { display: flex; gap: 16px; align-items: flex-start; padding: 16px 0; position: relative; }
+  .flow-step:not(:last-child) { border-bottom: 1px solid rgba(255,255,255,0.05); }
+  .flow-num { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; margin-top: 1px; }
+  .flow-num-blue { background: rgba(0,122,255,0.15); color: var(--accent-blue); border: 1px solid rgba(0,122,255,0.25); }
+  .flow-num-green { background: rgba(52,199,89,0.15); color: var(--accent-green); border: 1px solid rgba(52,199,89,0.25); }
+  .flow-num-orange { background: rgba(255,149,0,0.15); color: var(--accent-orange); border: 1px solid rgba(255,149,0,0.25); }
+  .flow-actor { font-size: 11px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 4px; }
+  .flow-desc { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
+  .flow-note { margin-top: 6px; font-size: 11px; color: var(--text-tertiary); padding: 6px 10px; border-radius: 8px; background: rgba(255,255,255,0.03); border: 1px solid var(--border); display: inline-block; }
+
+  /* ── NOTA / CALLOUT ── */
+  .nota { margin-top: 16px; padding: 12px 16px; border-radius: 12px; background: rgba(255,255,255,0.03); border: 1px solid var(--border); font-size: 12px; color: var(--text-tertiary); line-height: 1.6; }
+  .callout-blue { padding: 14px 18px; border-radius: 12px; background: rgba(0,122,255,0.07); border: 1px solid rgba(0,122,255,0.18); font-size: 13px; color: var(--text-secondary); line-height: 1.6; border-left: 3px solid var(--accent-blue); }
+  .callout-orange { padding: 14px 18px; border-radius: 12px; background: rgba(255,149,0,0.07); border: 1px solid rgba(255,149,0,0.18); font-size: 13px; color: var(--text-secondary); line-height: 1.6; border-left: 3px solid var(--accent-orange); }
+  .callout-green { padding: 14px 18px; border-radius: 12px; background: rgba(52,199,89,0.07); border: 1px solid rgba(52,199,89,0.18); font-size: 13px; color: var(--text-secondary); line-height: 1.6; border-left: 3px solid var(--accent-green); }
+  .callout-red { padding: 14px 18px; border-radius: 12px; background: rgba(255,59,48,0.07); border: 1px solid rgba(255,59,48,0.18); font-size: 13px; color: var(--text-secondary); line-height: 1.6; border-left: 3px solid var(--accent-red); }
+
+  /* ── CONTEXT TABLE ── */
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  thead th { text-align: left; padding: 8px 12px; color: var(--text-tertiary); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid var(--border); background: transparent; }
+  tbody td { padding: 11px 12px; border-bottom: 1px solid rgba(255,255,255,0.04); color: var(--text-secondary); background: transparent; transition: background 0.2s; }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover td { background: rgba(255,255,255,0.02); }
+  .td-label { color: var(--text-primary) !important; font-weight: 500 !important; }
+
+  /* ── HITOS TIMELINE ── */
+  .timeline { display: flex; flex-direction: column; gap: 0; border-radius: 14px; overflow: hidden; border: 1px solid var(--border); }
+  .timeline-item { display: flex; align-items: flex-start; gap: 16px; padding: 16px 20px; border-bottom: 1px solid var(--border); transition: background 0.2s; }
+  .timeline-item:last-child { border-bottom: none; }
+  .timeline-item:hover { background: rgba(255,255,255,0.02); }
+  .timeline-quarter { font-size: 11px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; min-width: 40px; padding-top: 2px; }
+  .timeline-body { flex: 1; }
+  .timeline-title { font-size: 13px; font-weight: 600; color: var(--text-primary); margin-bottom: 3px; }
+  .timeline-desc { font-size: 12px; color: var(--text-tertiary); line-height: 1.5; }
+
+  /* ── ENTITY CARD ── */
+  .entity-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 20px; }
+  @media (max-width: 900px) { .entity-grid { grid-template-columns: 1fr; } }
+  .entity-card { border-radius: 14px; padding: 20px; cursor: default; }
+  .entity-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; margin-bottom: 12px; }
+  .entity-name { font-size: 14px; font-weight: 600; margin-bottom: 6px; letter-spacing: -0.015em; }
+  .entity-def { font-size: 12px; color: var(--text-secondary); line-height: 1.6; }
+  .entity-examples { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 4px; }
+
+  /* ── FASE BOXES ── */
+  .fase-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px; }
+  @media (max-width: 700px) { .fase-grid { grid-template-columns: 1fr; } }
+  .fase-box { border-radius: 14px; padding: 20px; border: 1px solid var(--border); }
+  .fase-label { font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+  .fase-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .fase-items { display: flex; flex-direction: column; gap: 8px; }
+  .fase-item { display: flex; align-items: flex-start; gap: 8px; font-size: 13px; color: var(--text-secondary); line-height: 1.5; }
+  .fase-bullet { width: 4px; height: 4px; border-radius: 50%; background: var(--text-tertiary); flex-shrink: 0; margin-top: 7px; }
+
+  /* ── USE CASES GRID ── */
+  .usecase-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 700px) { .usecase-grid { grid-template-columns: 1fr; } }
+  .usecase-card { border-radius: 14px; padding: 20px; background: rgba(255,255,255,0.02); border: 1px solid var(--border); }
+  .usecase-title { font-size: 13px; font-weight: 700; letter-spacing: 0.03em; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+  .usecase-list { display: flex; flex-direction: column; gap: 8px; }
+  .usecase-item { display: flex; align-items: flex-start; gap: 8px; font-size: 13px; color: var(--text-secondary); line-height: 1.5; }
+  .usecase-bullet { width: 4px; height: 4px; border-radius: 50%; background: var(--text-tertiary); flex-shrink: 0; margin-top: 7px; }
+
+  /* ── REVEAL ── */
+  .reveal { }
+</style>
+</head>
+<body>
+<div class="noise"></div>
+
+<!-- NAV -->
+<nav class="top-nav">
+  <div class="nav-inner">
+    <a class="nav-link active" href="#vision">Visión</a>
+    <a class="nav-link" href="#entidad">Entidad</a>
+    <a class="nav-link" href="#flujo">Flujo actual</a>
+    <a class="nav-link" href="#casos">Casos de uso</a>
+    <a class="nav-link" href="#feedback">Feedback</a>
+  </div>
+</nav>
+
+<div class="page-wrapper">
+
+  <!-- HERO -->
+  <div class="hero reveal">
+    <div class="hero-eyebrow">
+      <span class="hero-tag">Navigation Core</span>
+      <span class="hero-date">11 de marzo de 2026</span>
+    </div>
+    <h1 class="hero-title">Visión <span>CRUD</span> de Categorías</h1>
+    <p class="hero-subtitle">Iniciativa orientada a la migración operativa de gestión de categorías, con el objetivo de apagar db2 en octubre de 2026 y habilitar la extensibilidad del dato.</p>
+    <div class="hero-meta">
+      <div class="hero-meta-item">
+        <span class="hero-meta-label">Iniciativa</span>
+        <span class="hero-meta-value">PRODUCT-1211</span>
+      </div>
+      <div class="hero-meta-item">
+        <span class="hero-meta-label">Objetivo</span>
+        <span class="hero-meta-value">Apagado db2 · Octubre 2026</span>
+      </div>
+      <div class="hero-meta-item">
+        <span class="hero-meta-label">Squad</span>
+        <span class="hero-meta-value">Findability</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- VISIÓN -->
+  <div id="vision" class="section-card surface reveal">
+    <div class="section-header">
+      <div class="section-accent" style="background: var(--accent-blue);"></div>
+      <div>
+        <div class="section-title">Visión del CRUD de categorías</div>
+        <div class="section-desc">Hitos y fases hacia la migración completa</div>
+      </div>
+    </div>
+
+    <div class="timeline" style="margin-bottom:20px;">
+      <div class="timeline-item">
+        <span class="timeline-quarter" style="color: var(--accent-green);">Q1</span>
+        <div class="timeline-body">
+          <div class="timeline-title">Actualización parcial de jerarquía y visibilidad en ZARA</div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <span class="timeline-quarter" style="color: var(--accent-orange);">Q1</span>
+        <div class="timeline-body">
+          <div class="timeline-title">Actualización parcial de jerarquía y visibilidad en CADENAS</div>
+          <div class="timeline-desc">Depende de la implantación del flujo IOP en cadenas.</div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <span class="timeline-quarter" style="color: var(--accent-orange);">Q1–Q2</span>
+        <div class="timeline-body">
+          <div class="timeline-title">Implantación cadenas flujo IOP</div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <span class="timeline-quarter" style="color: var(--accent-blue);">Q2</span>
+        <div class="timeline-body">
+          <div class="timeline-title">CRUD de categorías en ZARA</div>
+          <div class="timeline-desc">Desarrollo CORE.</div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <span class="timeline-quarter" style="color: var(--text-tertiary);">Q???</span>
+        <div class="timeline-body">
+          <div class="timeline-title">CRUD de categorías en CADENAS</div>
+          <div class="timeline-desc">Pendiente de definición de calendario.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="fase-grid">
+      <div class="fase-box" style="background: rgba(52,199,89,0.04); border-color: rgba(52,199,89,0.2);">
+        <div class="fase-label" style="color: var(--accent-green);">
+          <span class="fase-dot" style="background: var(--accent-green);"></span>
+          Fase 1 · Migración operativa
+        </div>
+        <div class="fase-items">
+          <div class="fase-item"><span class="fase-bullet"></span>Migración operativa de gestión = apagar watcher db2.</div>
+          <div class="fase-item"><span class="fase-bullet"></span>Flujo 100% IOP.</div>
+          <div class="fase-item"><span class="fase-bullet"></span>Sin implicar terceros actores (ADAPTER).</div>
+        </div>
+      </div>
+      <div class="fase-box" style="background: rgba(0,122,255,0.04); border-color: rgba(0,122,255,0.2);">
+        <div class="fase-label" style="color: var(--accent-blue);">
+          <span class="fase-dot" style="background: var(--accent-blue);"></span>
+          Fase 2 · Extensibilidad del dato
+        </div>
+        <div class="fase-items">
+          <div class="fase-item"><span class="fase-bullet"></span>Elemento XMEDIA – Capa de presentación.</div>
+          <div class="fase-item"><span class="fase-bullet"></span>Elemento SDUI.</div>
+          <div class="fase-item"><span class="fase-bullet"></span>Atributos soportados por GRIDS, atributos de representación y extensibilidad del dato.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ENTIDAD CATEGORÍA -->
+  <div id="entidad" class="section-card surface reveal">
+    <div class="section-header">
+      <div class="section-accent" style="background: var(--accent-purple);"></div>
+      <div>
+        <div class="section-title">Entidad categoría</div>
+        <div class="section-desc">Valores de categoría detallados en Confluence · Entidades V2</div>
+      </div>
+    </div>
+
+    <div class="entity-grid">
+      <div class="entity-card surface">
+        <div class="entity-icon" style="background: rgba(0,122,255,0.12);">🏷️</div>
+        <div class="entity-name">Commercial info</div>
+        <div class="entity-def">Información comercial de la categoría: nombre, traducciones y datos de gestión operativa.</div>
+      </div>
+      <div class="entity-card surface">
+        <div class="entity-icon" style="background: rgba(52,199,89,0.12);">🔍</div>
+        <div class="entity-name">SEO info</div>
+        <div class="entity-def">Metadatos SEO asociados a la categoría, incluyendo URL, traducciones y especificaciones por idioma.</div>
+      </div>
+      <div class="entity-card surface">
+        <div class="entity-icon" style="background: rgba(191,90,242,0.12);">🌲</div>
+        <div class="entity-name">Definiciones Jer/Vis/Atr</div>
+        <div class="entity-def">Definiciones de jerarquía, visibilidad y atributos que componen la estructura de la categoría.</div>
+      </div>
+    </div>
+
+    <div class="callout-orange" style="margin-bottom:12px;">
+      <strong style="color:var(--text-primary);">Duda abierta — association_value:</strong> Pendiente de aclarar semántica y comportamiento esperado del campo.
+    </div>
+    <div class="callout-orange">
+      <strong style="color:var(--text-primary);">Duda abierta — description (NEW):</strong> Nuevo campo sin especificación definitiva. Requiere revisión antes de implementar.
+    </div>
+  </div>
+
+  <!-- FLUJO ACTUAL -->
+  <div id="flujo" class="section-card surface reveal">
+    <div class="section-header">
+      <div class="section-accent" style="background: var(--accent-cyan);"></div>
+      <div>
+        <div class="section-title">Flujo actual de creación de categorías</div>
+        <div class="section-desc">Proceso end-to-end desde Comercial hasta SEO · Ejemplo: <a href="https://www.zara.com/es/es/hombre-camisetas-l855.html?v1=2578528" style="color:var(--accent-cyan); font-size:11px;" target="_blank">zara.com/es/es/hombre-camisetas-l855.html</a></div>
+      </div>
+    </div>
+
+    <div style="margin-bottom:16px;">
+      <div style="font-size:12px; font-weight:700; letter-spacing:0.05em; text-transform:uppercase; color:var(--accent-blue); margin-bottom:12px; display:flex; align-items:center; gap:8px;">
+        <span style="width:8px;height:8px;border-radius:50%;background:var(--accent-blue);display:inline-block;"></span>
+        COMERCIAL
+      </div>
+      <div class="flow-list">
+        <div class="flow-step">
+          <div class="flow-num flow-num-blue">1</div>
+          <div>
+            <div class="flow-actor" style="color:var(--accent-blue);">Creación de la categoría</div>
+            <div class="flow-desc">Se crea la categoría con su <code style="font-size:11px; background:rgba(255,255,255,0.06); padding:2px 6px; border-radius:4px;">item_key</code>.</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-num flow-num-blue">2</div>
+          <div>
+            <div class="flow-actor" style="color:var(--accent-blue);">Asignación de traducciones</div>
+            <div class="flow-desc">Se asignan las traducciones. Si no existen, se copia el mismo texto a todos los idiomas (ej: JEANS, JEANS, JEANS) para que sea usable.</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-num flow-num-blue">3</div>
+          <div>
+            <div class="flow-actor" style="color:var(--accent-blue);">Categoría de producto</div>
+            <div class="flow-desc">Se asigna una categoría de producto (valor 45 o 46) para que los productos sean visibles en los grids. Gestionado por ADAPTER.</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-num flow-num-blue">4</div>
+          <div>
+            <div class="flow-actor" style="color:var(--accent-blue);">URL única (en inglés)</div>
+            <div class="flow-desc">Se asigna la URL única en inglés — mecanismo actual de relación con el catálogo para visibilidad en el backoffice. Esta URL compone la parte final de la URL pública (marcada en amarillo).</div>
+            <span class="flow-note">⚠️ Candidato a eliminar en el nuevo modelo</span>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-num flow-num-blue">5</div>
+          <div>
+            <div class="flow-actor" style="color:var(--accent-blue);">Estado inicial: hidden</div>
+            <div class="flow-desc">Por defecto la categoría creada queda en estado <em>hidden</em>.</div>
+            <span class="flow-note">⚠️ Candidato a eliminar en el nuevo modelo</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="height:1px; background:var(--border); margin:20px 0;"></div>
+
+    <div>
+      <div style="font-size:12px; font-weight:700; letter-spacing:0.05em; text-transform:uppercase; color:var(--accent-green); margin-bottom:12px; display:flex; align-items:center; gap:8px;">
+        <span style="width:8px;height:8px;border-radius:50%;background:var(--accent-green);display:inline-block;"></span>
+        SEO
+      </div>
+      <div class="flow-list">
+        <div class="flow-step">
+          <div class="flow-num flow-num-green">6</div>
+          <div>
+            <div class="flow-actor" style="color:var(--accent-green);">Asignación del SEO ID</div>
+            <div class="flow-desc">SEO asigna el SEO ID — la parte azul de la URL. Es el parámetro en el que ADAPTER se basa para obtener las especificaciones SEO de la categoría.</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-num flow-num-green">7</div>
+          <div>
+            <div class="flow-actor" style="color:var(--accent-green);">Especificaciones SEO</div>
+            <div class="flow-desc">Una categoría puede tener o no especificaciones SEO. Dentro de las especificaciones, ningún valor es obligatorio.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout-blue" style="margin-top:20px;">
+      <strong style="color:var(--text-primary);">Info mínima de categoría:</strong> Texto + URL. Estos son los únicos campos imprescindibles para que una categoría sea operativa.
+    </div>
+  </div>
+
+  <!-- CASOS DE USO -->
+  <div id="casos" class="section-card surface reveal">
+    <div class="section-header">
+      <div class="section-accent" style="background: var(--accent-green);"></div>
+      <div>
+        <div class="section-title">Casos de uso</div>
+        <div class="section-desc">Referencia completa en Confluence · Casos de uso de categorías</div>
+      </div>
+    </div>
+
+    <div class="usecase-grid">
+      <div class="usecase-card">
+        <div class="usecase-title" style="color:var(--accent-blue);">
+          <span style="font-size:16px;">🏷️</span> Commercial info
+        </div>
+        <div class="usecase-list">
+          <div class="usecase-item"><span class="usecase-bullet"></span>UPSERT de categoría (item_key + nombre por defecto)</div>
+          <div class="usecase-item"><span class="usecase-bullet"></span>Completar traducciones</div>
+          <div class="usecase-item"><span class="usecase-bullet"></span>Asociación</div>
+          <div class="usecase-item"><span class="usecase-bullet"></span>¿Eliminación de categoría?</div>
+          <div class="usecase-item"><span class="usecase-bullet"></span>Consultar categorías (todas, por id, por texto…)</div>
+        </div>
+      </div>
+      <div class="usecase-card">
+        <div class="usecase-title" style="color:var(--accent-green);">
+          <span style="font-size:16px;">🔍</span> SEO info
+        </div>
+        <div class="usecase-list">
+          <div class="usecase-item"><span class="usecase-bullet"></span>UPSERT del SEO (ningún valor obligatorio)</div>
+          <div class="usecase-item"><span class="usecase-bullet"></span>Completar traducciones</div>
+          <div class="usecase-item"><span class="usecase-bullet"></span>Maestro de URLs</div>
+          <div class="usecase-item"><span class="usecase-bullet"></span>Eliminación de especificaciones SEO</div>
+          <div class="usecase-item"><span class="usecase-bullet"></span>Consultar SEO (por categoría y lenguaje)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FEEDBACK -->
+  <div id="feedback" class="section-card surface reveal">
+    <div class="section-header">
+      <div class="section-accent" style="background: var(--accent-orange);"></div>
+      <div>
+        <div class="section-title">Feedback</div>
+        <div class="section-desc">Observaciones de stakeholders</div>
+      </div>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Stakeholder</th>
+          <th>Observación</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="td-label">—</td>
+          <td>—</td>
+        </tr>
+        <tr>
+          <td class="td-label">—</td>
+          <td>—</td>
+        </tr>
+        <tr>
+          <td class="td-label">—</td>
+          <td>—</td>
+        </tr>
+        <tr>
+          <td class="td-label">—</td>
+          <td>—</td>
+        </tr>
+        <tr>
+          <td class="td-label">—</td>
+          <td>—</td>
+        </tr>
+        <tr>
+          <td class="td-label">—</td>
+          <td>—</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="nota" style="margin-top:20px;">
+      💡 Tabla de feedback pendiente de completar con los stakeholders del squad y reuniones de revisión.
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div style="text-align:center; padding-top:40px; border-top: 1px solid var(--border);">
+    <p style="font-size:12px; color:var(--text-tertiary);">Navigation Core · Visión CRUD de Categorías · PRODUCT-1211 · Marzo 2026</p>
+  </div>
+
+</div>
+
+<script>
+  gsap.registerPlugin(ScrollTrigger);
+
+  document.querySelectorAll('.reveal').forEach((el) => {
+    const delay = parseFloat(el.getAttribute('data-delay') || 0);
+    gsap.fromTo(el,
+      { opacity: 0, y: 28 },
+      {
+        opacity: 1, y: 0, duration: 0.85,
+        ease: "power3.out",
+        scrollTrigger: { trigger: el, start: "top 88%", toggleActions: "play none none reverse" },
+        delay
+      }
+    );
+  });
+
+  document.querySelectorAll('.entity-card').forEach(card => {
+    card.addEventListener('mouseenter', () => gsap.to(card, { scale: 1.015, duration: 0.3, ease: "power2.out" }));
+    card.addEventListener('mouseleave', () => gsap.to(card, { scale: 1, duration: 0.3, ease: "power2.out" }));
+  });
+
+  document.querySelectorAll('tbody tr').forEach(row => {
+    row.addEventListener('mouseenter', () => gsap.to(row, { x: 4, duration: 0.2, ease: "power2.out" }));
+    row.addEventListener('mouseleave', () => gsap.to(row, { x: 0, duration: 0.2, ease: "power2.out" }));
+  });
+
+  // Nav active on scroll
+  const sections = ['vision','entidad','flujo','casos','feedback'];
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(id => {
+      const el = document.getElementById(id);
+      if (el && window.scrollY >= el.offsetTop - 80) current = id;
+    });
+    document.querySelectorAll('.nav-link').forEach(link => {
+      link.classList.toggle('active', link.getAttribute('href') === '#' + current);
+    });
+  });
+</script>
+</body>
+</html>
