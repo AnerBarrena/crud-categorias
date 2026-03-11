@@ -64,8 +64,8 @@
     text-transform: uppercase; color: var(--text-tertiary);
   }
 
-  .page-wrapper { max-width: 1280px; margin: 0 auto; padding: 60px 40px; }
-  @media (max-width: 768px) { .page-wrapper { padding: 40px 20px; } }
+  .page-wrapper { max-width: 1280px; margin: 0 auto; padding: 36px 40px; }
+  @media (max-width: 768px) { .page-wrapper { padding: 24px 20px; } }
 
   /* ── NAV ── */
   .top-nav {
@@ -94,7 +94,7 @@
   .nav-link.active { color: var(--text-primary); background: rgba(255,255,255,0.08); }
 
   /* ── HEADER ── */
-  .hero { padding: 0 0 56px; }
+  .hero { padding: 0 0 32px; }
   .hero-eyebrow { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
   .hero-tag {
     font-size: 11px; font-weight: 600; letter-spacing: 0.07em;
@@ -112,9 +112,9 @@
   .hero-subtitle {
     font-size: 17px; color: var(--text-secondary);
     max-width: 600px; line-height: 1.6; letter-spacing: -0.015em;
-    margin-bottom: 32px;
+    margin-bottom: 0;
   }
-  .hero-meta { display: flex; gap: 24px; flex-wrap: wrap; }
+  .hero-meta { display: flex; gap: 24px; flex-wrap: wrap; margin-bottom: 14px; }
   .hero-meta-item { display: flex; flex-direction: column; gap: 2px; }
   .hero-meta-label { font-size: 11px; color: var(--text-tertiary); font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; }
   .hero-meta-value { font-size: 13px; color: var(--text-secondary); font-weight: 500; }
@@ -231,22 +231,19 @@
       <span class="hero-tag">Navigation Core</span>
       <span class="hero-date">11 de marzo de 2026</span>
     </div>
-    <h1 class="hero-title">Visión <span>CRUD</span> de Categorías</h1>
-    <p class="hero-subtitle">Iniciativa orientada a la migración operativa de gestión de categorías, con el objetivo de apagar db2 en octubre de 2026 y habilitar la extensibilidad del dato.</p>
+    <h1 class="hero-title">Visión CRUD de Categorías</h1>
     <div class="hero-meta">
       <div class="hero-meta-item">
         <span class="hero-meta-label">Iniciativa</span>
-        <span class="hero-meta-value">PRODUCT-1211</span>
+        <span class="hero-meta-value"><a href="https://jira.inditex.com/jira/browse/PRODUCT-1211" target="_blank" rel="noopener noreferrer" style="color: inherit; text-decoration: underline;">PRODUCT-1211</a></span>
       </div>
       <div class="hero-meta-item">
-        <span class="hero-meta-label">Objetivo</span>
-        <span class="hero-meta-value">Apagado db2 · Octubre 2026</span>
+        <span class="hero-meta-label">Título</span>
+        <span class="hero-meta-value">Gestión de categorías de menú 100% IOP</span>
       </div>
-      <div class="hero-meta-item">
-        <span class="hero-meta-label">Squad</span>
-        <span class="hero-meta-value">Findability</span>
-      </div>
+      
     </div>
+    <p class="hero-subtitle"></p>Objetivo de migrar la gestión operativa de categorías, con requerimiento de apagar db2 en octubre de 2026. Extensibilidad del dato y otras mejoras se abordarán en FASE 2.</p>
   </div>
 
   <!-- VISIÓN -->
@@ -261,33 +258,34 @@
 
     <div class="timeline" style="margin-bottom:20px;">
       <div class="timeline-item">
-        <span class="timeline-quarter" style="color: var(--accent-green);">Q1</span>
-        <div class="timeline-body">
-          <div class="timeline-title">Actualización parcial de jerarquía y visibilidad en ZARA</div>
-        </div>
-      </div>
-      <div class="timeline-item">
         <span class="timeline-quarter" style="color: var(--accent-orange);">Q1</span>
         <div class="timeline-body">
-          <div class="timeline-title">Actualización parcial de jerarquía y visibilidad en CADENAS</div>
-          <div class="timeline-desc">Depende de la implantación del flujo IOP en cadenas.</div>
+          <div class="timeline-title">Actualización parcial de jerarquía y visibilidad en ZARA</div>
+          <div class="timeline-desc">CORE termina desarrollo Q1.</div>
         </div>
       </div>
       <div class="timeline-item">
-        <span class="timeline-quarter" style="color: var(--accent-orange);">Q1–Q2</span>
+        <span class="timeline-quarter"><span style="color: var(--accent-orange);">Q1</span>–<span style="color: var(--accent-blue);">Q2</span></span>
         <div class="timeline-body">
           <div class="timeline-title">Implantación cadenas flujo IOP</div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <span class="timeline-quarter" style="color: var(--accent-blue);">¿Q2?</span>
+        <div class="timeline-body">
+          <div class="timeline-title">Actualización parcial de jerarquía y visibilidad en CADENAS</div>
+          <div class="timeline-desc">Dependencia con la implantación del flujo IOP en cadenas. Sugerimos hacerlo seguido para tener ZARA y CADENAS alineadas en funcionalidad.</div>
         </div>
       </div>
       <div class="timeline-item">
         <span class="timeline-quarter" style="color: var(--accent-blue);">Q2</span>
         <div class="timeline-body">
           <div class="timeline-title">CRUD de categorías en ZARA</div>
-          <div class="timeline-desc">Desarrollo CORE.</div>
+          <div class="timeline-desc">Comienzo desarrollo CORE.</div>
         </div>
       </div>
       <div class="timeline-item">
-        <span class="timeline-quarter" style="color: var(--text-tertiary);">Q???</span>
+        <span class="timeline-quarter" style="color: var(--text-tertiary);">Q</span>
         <div class="timeline-body">
           <div class="timeline-title">CRUD de categorías en CADENAS</div>
           <div class="timeline-desc">Pendiente de definición de calendario.</div>
@@ -533,7 +531,7 @@
 
   <!-- FOOTER -->
   <div style="text-align:center; padding-top:40px; border-top: 1px solid var(--border);">
-    <p style="font-size:12px; color:var(--text-tertiary);">Navigation Core · Visión CRUD de Categorías · PRODUCT-1211 · Marzo 2026</p>
+    <p style="font-size:12px; color:var(--text-tertiary);">Navigation Core · Visión CRUD de Categorías · <a href="https://jira.inditex.com/jira/browse/PRODUCT-1211" target="_blank" rel="noopener noreferrer" style="color:inherit; text-decoration:underline;">PRODUCT-1211</a> · Marzo 2026</p>
   </div>
 
 </div>
