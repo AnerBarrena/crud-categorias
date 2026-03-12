@@ -150,7 +150,7 @@
   .flow-num-orange { background: rgba(255,149,0,0.15); color: var(--accent-orange); border: 1px solid rgba(255,149,0,0.25); }
   .flow-actor { font-size: 11px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 4px; }
   .flow-desc { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
-  .flow-note { margin-top: 6px; font-size: 11px; color: var(--text-tertiary); padding: 6px 10px; border-radius: 8px; background: rgba(255,255,255,0.03); border: 1px solid var(--border); display: inline-block; }
+  .flow-note { margin-top: 6px; font-size: 11px; font-weight: 600; color: #ffd8a8; padding: 6px 10px; border-radius: 8px; background: rgba(255,149,0,0.18); border: 1px solid rgba(255,149,0,0.4); display: inline-block; }
 
   /* ── NOTA / CALLOUT ── */
   .nota { margin-top: 16px; padding: 12px 16px; border-radius: 12px; background: rgba(255,255,255,0.03); border: 1px solid var(--border); font-size: 12px; color: var(--text-tertiary); line-height: 1.6; }
@@ -187,6 +187,21 @@
   .entity-examples { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 4px; }
 
   /* ── FASE BOXES ── */
+  .propuestas-group {
+    margin-top: 18px;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 16px;
+    background: rgba(255,255,255,0.015);
+  }
+  .propuestas-title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    margin-bottom: 12px;
+  }
   .fase-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px; }
   @media (max-width: 700px) { .fase-grid { grid-template-columns: 1fr; } }
   .fase-box { border-radius: 14px; padding: 20px; border: 1px solid var(--border); }
@@ -258,14 +273,14 @@
 
     <div class="timeline" style="margin-bottom:20px;">
       <div class="timeline-item">
-        <span class="timeline-quarter" style="color: var(--accent-orange);">Q1</span>
+        <span class="timeline-quarter" style="color: var(--accent-green);">Q1</span>
         <div class="timeline-body">
           <div class="timeline-title">Actualización parcial de jerarquía y visibilidad en ZARA</div>
           <div class="timeline-desc">CORE termina desarrollo Q1.</div>
         </div>
       </div>
       <div class="timeline-item">
-        <span class="timeline-quarter"><span style="color: var(--accent-orange);">Q1</span>–<span style="color: var(--accent-blue);">Q2</span></span>
+        <span class="timeline-quarter"><span style="color: var(--accent-green);">Q1</span>–<span style="color: var(--accent-blue);">Q2</span></span>
         <div class="timeline-body">
           <div class="timeline-title">Implantación cadenas flujo IOP</div>
         </div>
@@ -293,27 +308,32 @@
       </div>
     </div>
 
-    <div class="fase-grid">
-      <div class="fase-box" style="background: rgba(52,199,89,0.04); border-color: rgba(52,199,89,0.2);">
-        <div class="fase-label" style="color: var(--accent-green);">
-          <span class="fase-dot" style="background: var(--accent-green);"></span>
-          Fase 1 · Migración operativa
+    <div class="propuestas-group">
+      <div class="propuestas-title">Propuesta</div>
+      <div class="fase-grid" style="margin-top:0;">
+        <div class="fase-box" style="background: rgba(52,199,89,0.04); border-color: rgba(52,199,89,0.2);">
+          <div class="fase-label" style="color: var(--accent-green);">
+            <span class="fase-dot" style="background: var(--accent-green);"></span>
+            Fase 1 · Migración operativa
+          </div>
+          <div class="fase-items">
+            <div class="fase-item"><span class="fase-bullet"></span>Apagar watcher db2.</div>
+            <div class="fase-item"><span class="fase-bullet"></span>Flujo 100% IOP.</div>
+            <div class="fase-item"><span class="fase-bullet"></span>Sin tener que implicar a ADAPTER. (Sin cambios en reader)</div>
+          </div>
         </div>
-        <div class="fase-items">
-          <div class="fase-item"><span class="fase-bullet"></span>Migración operativa de gestión = apagar watcher db2.</div>
-          <div class="fase-item"><span class="fase-bullet"></span>Flujo 100% IOP.</div>
-          <div class="fase-item"><span class="fase-bullet"></span>Sin implicar terceros actores (ADAPTER).</div>
-        </div>
-      </div>
-      <div class="fase-box" style="background: rgba(0,122,255,0.04); border-color: rgba(0,122,255,0.2);">
-        <div class="fase-label" style="color: var(--accent-blue);">
-          <span class="fase-dot" style="background: var(--accent-blue);"></span>
-          Fase 2 · Extensibilidad del dato
-        </div>
-        <div class="fase-items">
-          <div class="fase-item"><span class="fase-bullet"></span>Elemento XMEDIA – Capa de presentación.</div>
-          <div class="fase-item"><span class="fase-bullet"></span>Elemento SDUI.</div>
-          <div class="fase-item"><span class="fase-bullet"></span>Atributos soportados por GRIDS, atributos de representación y extensibilidad del dato.</div>
+        <div class="fase-box" style="background: rgba(0,122,255,0.04); border-color: rgba(0,122,255,0.2);">
+          <div class="fase-label" style="color: var(--accent-blue);">
+            <span class="fase-dot" style="background: var(--accent-blue);"></span>
+            Fase 2 · Extensibilidad del dato & Otras mejoras
+          </div>
+          <div class="fase-items">
+            <div class="fase-item"><span class="fase-bullet"></span>Elemento XMEDIA – Capa de presentación.</div>
+            <div class="fase-item"><span class="fase-bullet"></span>Elemento SDUI.</div>
+            <div class="fase-item"><span class="fase-bullet"></span>Atributos soportados por GRIDS.</div>
+            <div class="fase-item"><span class="fase-bullet"></span>Atributos de representación.</div>
+            <div class="fase-item"><span class="fase-bullet"></span>Otras mejoras que se vayan detectando en la implantación</div>
+          </div>
         </div>
       </div>
     </div>
@@ -325,7 +345,7 @@
       <div class="section-accent" style="background: var(--accent-purple);"></div>
       <div>
         <div class="section-title">Entidad categoría</div>
-        <div class="section-desc">Valores de categoría detallados en Confluence · Entidades V2</div>
+        <div class="section-desc">Valores de categoría detallados en <a href="https://confluence.inditex.com/confluence/spaces/PLATECOM/pages/872510995/3.-+Entidades+v2#id-3.Entidadesv2-Informaci%C3%B3ndeitemdecategor%C3%ADa" target="_blank" rel="noopener noreferrer" style="color:inherit; text-decoration:underline;">Confluence · Entidades V2</a></div>
       </div>
     </div>
 
@@ -341,17 +361,17 @@
         <div class="entity-def">Metadatos SEO asociados a la categoría, incluyendo URL, traducciones y especificaciones por idioma.</div>
       </div>
       <div class="entity-card surface">
-        <div class="entity-icon" style="background: rgba(191,90,242,0.12);">🌲</div>
-        <div class="entity-name">Definiciones Jer/Vis/Atr</div>
+        <div class="entity-icon" style="background: rgba(191,90,242,0.12);">📅</div>
+        <div class="entity-name">Definiciones Jer/Vis/Atr en base a milestones</div>
         <div class="entity-def">Definiciones de jerarquía, visibilidad y atributos que componen la estructura de la categoría.</div>
       </div>
     </div>
 
     <div class="callout-orange" style="margin-bottom:12px;">
-      <strong style="color:var(--text-primary);">Duda abierta — association_value:</strong> Pendiente de aclarar semántica y comportamiento esperado del campo.
+      <strong style="color:var(--text-primary);">💡 Duda — association_value:</strong> Pendiente de aclarar semántica y comportamiento esperado del campo.
     </div>
     <div class="callout-orange">
-      <strong style="color:var(--text-primary);">Duda abierta — description (NEW):</strong> Nuevo campo sin especificación definitiva. Requiere revisión antes de implementar.
+      <strong style="color:var(--text-primary);">💡 Duda — description (NEW):</strong> Nuevo campo sin especificación definitiva. Requiere revisión antes de implementar.
     </div>
   </div>
 
@@ -361,7 +381,7 @@
       <div class="section-accent" style="background: var(--accent-cyan);"></div>
       <div>
         <div class="section-title">Flujo actual de creación de categorías</div>
-        <div class="section-desc">Proceso end-to-end desde Comercial hasta SEO · Ejemplo: <a href="https://www.zara.com/es/es/hombre-camisetas-l855.html?v1=2578528" style="color:var(--accent-cyan); font-size:11px;" target="_blank">zara.com/es/es/hombre-camisetas-l855.html</a></div>
+        <div class="section-desc">Proceso end-to-end desde Comercial hasta SEO · Ejemplo: <a href="https://www.zara.com/es/es/hombre-camisetas-l855.html?v1=2578528" style="color:var(--text-primary); font-size:11px;" target="_blank" rel="noopener noreferrer">zara.com/es/es/<span style="background:#ffd60a; color:#1a1a1a; padding:1px 4px; border-radius:4px;">hombre-camisetas</span>-<span style="background:var(--accent-blue); color:#ffffff; padding:1px 4px; border-radius:4px;">l855</span>.html</a></div>
       </div>
     </div>
 
@@ -382,14 +402,14 @@
           <div class="flow-num flow-num-blue">2</div>
           <div>
             <div class="flow-actor" style="color:var(--accent-blue);">Asignación de traducciones</div>
-            <div class="flow-desc">Se asignan las traducciones. Si no existen, se copia el mismo texto a todos los idiomas (ej: JEANS, JEANS, JEANS) para que sea usable.</div>
+            <div class="flow-desc">Se asignan las traducciones. Si no existen, se copia el mismo texto a todos los idiomas (ej: JEANS, JEANS, JEANS) para que sea usar en las definiciones.</div>
           </div>
         </div>
         <div class="flow-step">
           <div class="flow-num flow-num-blue">3</div>
           <div>
             <div class="flow-actor" style="color:var(--accent-blue);">Categoría de producto</div>
-            <div class="flow-desc">Se asigna una categoría de producto (valor 45 o 46) para que los productos sean visibles en los grids. Gestionado por ADAPTER.</div>
+            <div class="flow-desc">Se asigna una categoría de producto (valor 45 o 46) para que los productos sean visibles en los grids.  (Adapter los necesita para poder tener elementos de menú con contenidos diferentes enlazados)</div>
           </div>
         </div>
         <div class="flow-step">
@@ -436,8 +456,18 @@
       </div>
     </div>
 
-    <div class="callout-blue" style="margin-top:20px;">
-      <strong style="color:var(--text-primary);">Info mínima de categoría:</strong> Texto + URL. Estos son los únicos campos imprescindibles para que una categoría sea operativa.
+    <div style="margin-top:20px;">
+      <div style="font-size:12px; font-weight:700; letter-spacing:0.05em; text-transform:uppercase; color:var(--accent-orange); margin-bottom:12px; display:flex; align-items:center; gap:8px;">
+        <span style="width:8px;height:8px;border-radius:50%;background:var(--accent-orange);display:inline-block;"></span>
+        INFO MÍNIMA CATEGORÍA
+      </div>
+      <div class="flow-list">
+        <div class="flow-step">
+          <div>
+            <div class="flow-desc">Texto + URL. Estos son los únicos valores imprescindibles para que una categoría sea operativa.</div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
